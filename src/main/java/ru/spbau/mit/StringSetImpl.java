@@ -19,6 +19,7 @@ public class StringSetImpl implements StringSet {
     private static class Node {
         private Node[] children = new Node[MAX_CHILDREN];
         private boolean isElement;
+        private int numberOfElementChildren;
     }
 
     /**
@@ -37,6 +38,7 @@ public class StringSetImpl implements StringSet {
     /**
      * This recursive subroutine goes along the path to node corresponding to given element.
      * If some nodes on that path are non-existent they are created.
+     *
      * @param x
      * @param element
      * @param depth
@@ -59,6 +61,9 @@ public class StringSetImpl implements StringSet {
             char c = element.charAt(depth);
             OperationResult recRes = add(x.children[c], element, depth + 1);
             x.children[c] = recRes.node;
+            if (recRes.changesWereApplied) {
+                x.numberOfElementChildren += 1;
+            }
             opRes.changesWereApplied = recRes.changesWereApplied;
         }
         return opRes;
@@ -78,6 +83,7 @@ public class StringSetImpl implements StringSet {
 
     /**
      * This recursive subroutine goes along the path to node corresponding to given element.
+     *
      * @param x
      * @param element
      * @param depth
@@ -129,6 +135,9 @@ public class StringSetImpl implements StringSet {
             char c = element.charAt(depth);
             OperationResult recRes = delete(x.children[c], element, depth + 1);
             x.children[c] = recRes.node;
+            if (recRes.changesWereApplied) {
+                x.numberOfElementChildren -= 1;
+            }
             opRes.changesWereApplied = recRes.changesWereApplied;
         }
 
@@ -164,26 +173,17 @@ public class StringSetImpl implements StringSet {
         return size;
     }
 
-    private int howManySubElementsStartsWithPrefix(Node x, String prefix) {
-        if (x == null) {
-            return 0;
-        }
-        int numberOfSubElementsWithPrefix = 0;
-        if (x.isElement) {
-            numberOfSubElementsWithPrefix += 1;
-        }
-        for (char c = 0; c < MAX_CHILDREN; c++) {
-            String recPrefix = prefix + c;
-            numberOfSubElementsWithPrefix += howManySubElementsStartsWithPrefix(x.children[c], recPrefix);
-        }
-        return numberOfSubElementsWithPrefix;
-    }
-
     /**
      * Expected complexity: O(|prefix|)
      */
     public int howManyStartsWithPrefix(String prefix) {
         Node x = getEndNode(root, prefix, 0);
-        return howManySubElementsStartsWithPrefix(x, prefix);
+        if (x == null) {
+            return 0;
+        }
+        if (x.isElement) {
+            return x.numberOfElementChildren + 1;
+        }
+        return x.numberOfElementChildren;
     }
 }
