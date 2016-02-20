@@ -104,8 +104,9 @@ public class StringSetImpl implements StringSet {
 
     /**
      * This recursive subroutine goes along the path to node corresponding to given element,
-     * and, if that path is complete, that element is deleted and
-     * backward recursion steps remove subtries that don't contain any elements.
+     * and, if that path is complete, that element is deleted.
+     * Backward recursion steps remove subtries that don't contain any elements.
+     *
      * @param x
      * @param element
      * @param depth
