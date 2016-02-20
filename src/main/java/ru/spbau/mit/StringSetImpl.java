@@ -13,7 +13,7 @@ public class StringSetImpl implements StringSet {
     private int size;
 
     /**
-     * Node is a building block of any trie. It has children and a flag.
+     * Node is a building block of any trie. It has children, a flag and number of children that are elements.
      * Flag shows if this node is an end of some set element or not.
      */
     private static class Node {
