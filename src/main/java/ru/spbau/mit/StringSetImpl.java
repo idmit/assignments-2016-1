@@ -75,6 +75,7 @@ public class StringSetImpl implements StringSet {
      * @return <tt>true</tt> if this set did not already contain the specified
      * element
      */
+    @Override
     public boolean add(String element) {
         OperationResult opRes = add(root, element, 0);
         root = opRes.node;
@@ -103,6 +104,7 @@ public class StringSetImpl implements StringSet {
     /**
      * Expected complexity: O(|element|)
      */
+    @Override
     public boolean contains(String element) {
         Node x = getEndNode(root, element, 0);
         return x != null && x.isElement;
@@ -159,6 +161,7 @@ public class StringSetImpl implements StringSet {
      *
      * @return <tt>true</tt> if this set contained the specified element
      */
+    @Override
     public boolean remove(String element) {
         Boolean found = false;
         OperationResult opRes = delete(root, element, 0);
@@ -169,6 +172,7 @@ public class StringSetImpl implements StringSet {
     /**
      * Expected complexity: O(1)
      */
+    @Override
     public int size() {
         return size;
     }
@@ -176,6 +180,7 @@ public class StringSetImpl implements StringSet {
     /**
      * Expected complexity: O(|prefix|)
      */
+    @Override
     public int howManyStartsWithPrefix(String prefix) {
         Node x = getEndNode(root, prefix, 0);
         if (x == null) {
