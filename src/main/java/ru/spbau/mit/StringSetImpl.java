@@ -163,7 +163,7 @@ public class StringSetImpl implements StringSet {
      */
     @Override
     public boolean remove(String element) {
-        Boolean found = false;
+        boolean found = false;
         OperationResult opRes = delete(root, element, 0);
         root = opRes.node;
         return opRes.changesWereApplied;
