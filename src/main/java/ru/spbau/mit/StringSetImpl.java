@@ -36,19 +36,6 @@ public class StringSetImpl implements StringSet {
     }
 
     /**
-     * This compound type stores target node of some operation and a flag.
-     * Flag shows if this node was affected by operation in question.
-     */
-    private static class OperationResult {
-        private Node node;
-        private boolean changesWereApplied;
-
-        OperationResult(Node node) {
-            this.node = node;
-        }
-    }
-
-    /**
      * This recursive subroutine goes along the path to node corresponding to given element.
      * If some nodes on that path are non-existent they are created.
      *
@@ -57,29 +44,24 @@ public class StringSetImpl implements StringSet {
      * @param depth
      * @return
      */
-    private OperationResult add(Node x, String element, int depth) {
+    private Node add(Node x, String element, int depth) {
         if (x == null) {
             x = new Node();
         }
-
-        OperationResult opRes = new OperationResult(x);
 
         if (depth == element.length()) {
             if (!x.isElement) {
                 size++;
                 x.isElement = true;
-                opRes.changesWereApplied = true;
             }
         } else {
             char c = element.charAt(depth);
-            OperationResult recRes = add(x.getChild(c), element, depth + 1);
-            x.setChild(c, recRes.node);
-            if (recRes.changesWereApplied) {
-                x.numberOfElementChildren += 1;
-            }
-            opRes.changesWereApplied = recRes.changesWereApplied;
+            Node node = add(x.getChild(c), element, depth + 1);
+            x.setChild(c, node);
+            x.numberOfElementChildren += 1;
         }
-        return opRes;
+
+        return x;
     }
 
     /**
@@ -90,9 +72,11 @@ public class StringSetImpl implements StringSet {
      */
     @Override
     public boolean add(String element) {
-        OperationResult opRes = add(root, element, 0);
-        root = opRes.node;
-        return opRes.changesWereApplied;
+        if (contains(element)) {
+            return false;
+        }
+        root = add(root, element, 0);
+        return true;
     }
 
     /**
@@ -133,40 +117,33 @@ public class StringSetImpl implements StringSet {
      * @param depth
      * @return
      */
-    private OperationResult delete(Node x, String element, int depth) {
-        OperationResult opRes = new OperationResult(x);
-
+    private Node delete(Node x, String element, int depth) {
         if (x == null) {
-            return opRes;
+            return null;
         }
 
         if (depth == element.length()) {
             if (x.isElement) {
                 size--;
                 x.isElement = false;
-                opRes.changesWereApplied = true;
             }
         } else {
             char c = element.charAt(depth);
-            OperationResult recRes = delete(x.getChild(c), element, depth + 1);
-            x.setChild(c, recRes.node);
-            if (recRes.changesWereApplied) {
-                x.numberOfElementChildren -= 1;
-            }
-            opRes.changesWereApplied = recRes.changesWereApplied;
+            Node node = delete(x.getChild(c), element, depth + 1);
+            x.setChild(c, node);
+            x.numberOfElementChildren -= 1;
         }
 
         if (x.isElement) {
-            return opRes;
+            return x;
         }
 
         for (char c = 'A'; c <= 'z'; c++) {
             if (x.getChild(c) != null) {
-                return opRes;
+                return x;
             }
         }
-        opRes.node = null;
-        return opRes;
+        return null;
     }
 
     /**
@@ -176,10 +153,11 @@ public class StringSetImpl implements StringSet {
      */
     @Override
     public boolean remove(String element) {
-        boolean found = false;
-        OperationResult opRes = delete(root, element, 0);
-        root = opRes.node;
-        return opRes.changesWereApplied;
+        if (!contains(element)) {
+            return false;
+        }
+        root = delete(root, element, 0);
+        return true;
     }
 
     /**
