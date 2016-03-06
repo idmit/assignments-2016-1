@@ -5,9 +5,14 @@ package ru.spbau.mit;
  */
 public class StringSetImpl implements StringSet {
     /**
-     * Size of ASCII table range from zero to the last English alphabet letter.
+     * Size of ASCII table range from `A` to the `z`.
      */
-    private static final int MAX_CHILDREN = 123;
+    private static final int MAX_CHILDREN = 'z' - 'A' + 1;
+
+    /**
+     * An offset in the ASCII table from `\0` to `A`.
+     */
+    private static final int ASCII_OFFSET = 'A';
 
     private Node root;
     private int size;
@@ -20,6 +25,14 @@ public class StringSetImpl implements StringSet {
         private Node[] children = new Node[MAX_CHILDREN];
         private boolean isElement;
         private int numberOfElementChildren;
+
+        public Node getChild(char letter) {
+            return children[letter - ASCII_OFFSET];
+        }
+
+        public void setChild(char letter, Node node) {
+            children[letter - ASCII_OFFSET] = node;
+        }
     }
 
     /**
@@ -59,8 +72,8 @@ public class StringSetImpl implements StringSet {
             }
         } else {
             char c = element.charAt(depth);
-            OperationResult recRes = add(x.children[c], element, depth + 1);
-            x.children[c] = recRes.node;
+            OperationResult recRes = add(x.getChild(c), element, depth + 1);
+            x.setChild(c, recRes.node);
             if (recRes.changesWereApplied) {
                 x.numberOfElementChildren += 1;
             }
@@ -98,7 +111,7 @@ public class StringSetImpl implements StringSet {
             return x;
         }
         char c = element.charAt(depth);
-        return getEndNode(x.children[c], element, depth + 1);
+        return getEndNode(x.getChild(c), element, depth + 1);
     }
 
     /**
@@ -135,8 +148,8 @@ public class StringSetImpl implements StringSet {
             }
         } else {
             char c = element.charAt(depth);
-            OperationResult recRes = delete(x.children[c], element, depth + 1);
-            x.children[c] = recRes.node;
+            OperationResult recRes = delete(x.getChild(c), element, depth + 1);
+            x.setChild(c, recRes.node);
             if (recRes.changesWereApplied) {
                 x.numberOfElementChildren -= 1;
             }
@@ -147,8 +160,8 @@ public class StringSetImpl implements StringSet {
             return opRes;
         }
 
-        for (int c = 0; c < MAX_CHILDREN; c++) {
-            if (x.children[c] != null) {
+        for (char c = 'A'; c <= 'z'; c++) {
+            if (x.getChild(c) != null) {
                 return opRes;
             }
         }
