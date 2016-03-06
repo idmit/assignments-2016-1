@@ -1,9 +1,11 @@
 package ru.spbau.mit;
 
+import java.io.*;
+
 /**
  * Created by idmit on 17/02/2016.
  */
-public class StringSetImpl implements StringSet {
+public class StringSetImpl implements StringSet, StreamSerializable {
     /**
      * Size of ASCII table range from `A` to the `z`.
      */
@@ -21,7 +23,7 @@ public class StringSetImpl implements StringSet {
      * Node is a building block of any trie. It has children, a flag and number of children that are elements.
      * Flag shows if this node is an end of some set element or not.
      */
-    private static class Node {
+    private static class Node implements StreamSerializable {
         private Node[] children = new Node[MAX_CHILDREN];
         private boolean isElement;
         private int numberOfElementChildren;
@@ -32,6 +34,46 @@ public class StringSetImpl implements StringSet {
 
         public void setChild(char letter, Node node) {
             children[letter - ASCII_OFFSET] = node;
+        }
+
+        @Override
+        public void serialize(OutputStream out) {
+            try {
+                DataOutputStream dataOutputStream = new DataOutputStream(out);
+                dataOutputStream.writeBoolean(isElement);
+                dataOutputStream.writeInt(numberOfElementChildren);
+                for (Node child : children) {
+                    boolean childExists = (child != null);
+
+                    dataOutputStream.writeBoolean(childExists);
+                    if (childExists) {
+                        child.serialize(out);
+                    }
+                }
+            } catch (IOException e) {
+                throw new SerializationException();
+            }
+        }
+
+        @Override
+        public void deserialize(InputStream in) {
+            try {
+                DataInputStream dataInputStream = new DataInputStream(in);
+                isElement = dataInputStream.readBoolean();
+                numberOfElementChildren = dataInputStream.readInt();
+                for (int k = 0; k < MAX_CHILDREN; k++) {
+                    boolean childExists = dataInputStream.readBoolean();
+
+                    children[k] = null;
+                    if (childExists) {
+                        Node node = new Node();
+                        node.deserialize(in);
+                        children[k] = node;
+                    }
+                }
+            } catch (IOException e) {
+                throw new SerializationException();
+            }
         }
     }
 
@@ -181,5 +223,39 @@ public class StringSetImpl implements StringSet {
             return x.numberOfElementChildren + 1;
         }
         return x.numberOfElementChildren;
+    }
+
+    @Override
+    public void serialize(OutputStream out) {
+        try {
+            DataOutputStream dataOutputStream = new DataOutputStream(out);
+            dataOutputStream.writeInt(size);
+            boolean rootExists = (root != null);
+
+            dataOutputStream.writeBoolean(rootExists);
+            if (rootExists) {
+                root.serialize(out);
+            }
+        } catch (IOException e) {
+            throw new SerializationException();
+        }
+    }
+
+    @Override
+    public void deserialize(InputStream in) {
+        try {
+            DataInputStream dataInputStream = new DataInputStream(in);
+            size = dataInputStream.readInt();
+            boolean rootExists = dataInputStream.readBoolean();
+
+            root = null;
+            if (rootExists) {
+                Node node = new Node();
+                node.deserialize(in);
+                root = node;
+            }
+        } catch (IOException e) {
+            throw new SerializationException();
+        }
     }
 }
