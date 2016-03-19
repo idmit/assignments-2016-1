@@ -1,6 +1,7 @@
 package ru.spbau.mit;
 
 public abstract class Predicate<T> extends Function1<T, Boolean> {
+    @Override
     public abstract Boolean apply(T t);
 
     public static final Predicate<Object> ALWAYS_TRUE = new Predicate<Object>() {
