@@ -4,22 +4,10 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class CollectionsTest {
-    @Test
-    public void testCollections() throws NoSuchMethodException,
-            IllegalAccessException, InvocationTargetException, InstantiationException {
-        Constructor constructor = Collections.class.getDeclaredConstructor();
-        assertTrue(Modifier.isPrivate(constructor.getModifiers()));
-        constructor.setAccessible(true);
-        constructor.newInstance();
-    }
-
     @Test
     public void testMap() {
         final ArrayList<Integer> originalData = new ArrayList<>(Arrays.asList(2, 4, 5, 7));
