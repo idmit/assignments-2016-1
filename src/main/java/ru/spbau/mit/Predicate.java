@@ -18,29 +18,35 @@ public abstract class Predicate<T> extends Function1<T, Boolean> {
         }
     };
 
-    public Predicate<T> and(final Predicate<? super T> p) {
-        return new Predicate<T>() {
+    // Extra type-parameter allows saving to a variable of
+    // narrower type in terms of function's argument.
+    public <U extends T> Predicate<U> and(final Predicate<? super T> p) {
+        return new Predicate<U>() {
             @Override
-            public Boolean apply(T t) {
-                return Predicate.this.apply(t) && p.apply(t);
+            public Boolean apply(U u) {
+                return Predicate.this.apply(u) && p.apply(u);
             }
         };
     }
 
-    public Predicate<T> or(final Predicate<? super T> p) {
-        return new Predicate<T>() {
+    // Extra type-parameter allows saving to a variable of
+    // narrower type in terms of function's argument.
+    public <U extends T> Predicate<U> or(final Predicate<? super T> p) {
+        return new Predicate<U>() {
             @Override
-            public Boolean apply(T t) {
-                return Predicate.this.apply(t) || p.apply(t);
+            public Boolean apply(U u) {
+                return Predicate.this.apply(u) || p.apply(u);
             }
         };
     }
 
-    public Predicate<T> not() {
-        return new Predicate<T>() {
+    // Extra type-parameter allows saving to a variable of
+    // narrower type in terms of function's argument.
+    public <U extends T> Predicate<U> not() {
+        return new Predicate<U>() {
             @Override
-            public Boolean apply(T t) {
-                return !Predicate.this.apply(t);
+            public Boolean apply(U u) {
+                return !Predicate.this.apply(u);
             }
         };
     }
