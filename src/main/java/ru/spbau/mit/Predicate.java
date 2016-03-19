@@ -1,8 +1,5 @@
 package ru.spbau.mit;
 
-/**
- * Created by idmit on 15/03/2016.
- */
 public abstract class Predicate<T> extends Function1<T, Boolean> {
     public abstract Boolean apply(T t);
 

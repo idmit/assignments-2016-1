@@ -1,8 +1,5 @@
 package ru.spbau.mit;
 
-/**
- * Created by idmit on 15/03/2016.
- */
 public abstract class Function1<T, R> {
     public abstract R apply(T t);
 
