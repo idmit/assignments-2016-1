@@ -143,7 +143,7 @@ public class HashMultiset<E> implements Multiset<E> {
     @Override
     public boolean remove(Object o) {
         if (map.containsKey(o)) {
-            if (map.get(o) == 0) {
+            if (map.get(o) == 1) {
                 map.remove(o);
             } else {
                 map.put((E) o, map.get(o) - 1);
