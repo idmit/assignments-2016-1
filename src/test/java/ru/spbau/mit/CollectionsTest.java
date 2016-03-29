@@ -83,36 +83,36 @@ public class CollectionsTest {
 
     @Test
     public void testFoldl() {
-        final List<Integer> originalData = new ArrayList<>(Arrays.asList(3, 4, 7, 9, 0));
+        final List<Integer> originalData = new ArrayList<>(Arrays.asList(3, 4, 7, 9));
 
-        Function2<Object, Object, Integer> sum = new Function2<Object, Object, Integer>() {
+        Function2<Object, Object, Integer> diff = new Function2<Object, Object, Integer>() {
             @Override
-            public Integer apply(Object z, Object x) {
-                return (Integer) z + (Integer) x;
+            public Integer apply(Object x, Object y) {
+                return (Integer) x - (Integer) y;
             }
         };
 
-        Number s = Collections.foldl(sum, 0, originalData);
+        Number s = Collections.foldl(diff, 0, originalData);
 
-        Integer answer = 23;
+        Integer answer = -23;
 
         assertEquals(s, answer);
     }
 
     @Test
     public void testFoldr() {
-        final List<Integer> originalData = new ArrayList<>(Arrays.asList(3, 4, 7, 9, 3));
+        final List<Integer> originalData = new ArrayList<>(Arrays.asList(3, 4, 7, 9));
 
-        Function2<Object, Object, Integer> sum = new Function2<Object, Object, Integer>() {
+        Function2<Object, Object, Integer> diff = new Function2<Object, Object, Integer>() {
             @Override
-            public Integer apply(Object x, Object z) {
-                return (Integer) x + (Integer) z;
+            public Integer apply(Object x, Object y) {
+                return (Integer) x - (Integer) y;
             }
         };
 
-        Number s = Collections.foldr(sum, 0, originalData);
+        Number s = Collections.foldr(diff, 0, originalData);
 
-        Integer answer = 26;
+        Integer answer = -3;
 
         assertEquals(s, answer);
     }
