@@ -86,4 +86,24 @@ public class Function2Test {
 
         assertEquals(curried.apply(template).apply(times), answer);
     }
+
+    @Test
+    public void testFancyCurry() {
+        Function2<String, Number, String> repeat = new Function2<String, Number, String>() {
+            @Override
+            public String apply(String s, Number x) {
+                return new String(new char[(Integer) x]).replace("\0", s);
+            }
+        };
+
+        // It's possible to narrow type of second argument from Number to Integer.
+        // This feature can be useful and doesn't interfere with straightforward currying.
+        Function1<String, Function1<Integer, String>> curried = repeat.curry();
+
+        String template = "Ax";
+        final int times = 2;
+        String answer = "AxAx";
+
+        assertEquals(curried.apply(template).apply(times), answer);
+    }
 }

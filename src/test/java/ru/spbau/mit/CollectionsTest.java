@@ -116,4 +116,25 @@ public class CollectionsTest {
 
         assertEquals(s, answer);
     }
+
+    @Test
+    public void testFancyMap() {
+        final List<Integer> originalData = new ArrayList<>(Arrays.asList(2, 4, 5, 7));
+
+        Function1<Integer, Integer> timesTwo = new Function1<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer x) {
+                return x + x;
+            }
+        };
+
+        // It's possible to widen return type from Integer to Number.
+        // Such operation requires method to have explicit parameters.
+        // This feature can be useful and doesn't interfere with straightforward map.
+        Iterable<Number> transformedNumData = Collections.<Integer, Number>map(timesTwo, originalData);
+
+        final List<Integer> correctlyTransformedData = new ArrayList<>(Arrays.asList(4, 8, 10, 14));
+
+        assertEquals(transformedNumData, correctlyTransformedData);
+    }
 }
