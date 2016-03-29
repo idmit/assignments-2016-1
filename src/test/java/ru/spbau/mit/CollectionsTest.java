@@ -6,11 +6,12 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class CollectionsTest {
     @Test
     public void testMap() {
-        final ArrayList<Integer> originalData = new ArrayList<>(Arrays.asList(2, 4, 5, 7));
+        final List<Integer> originalData = new ArrayList<>(Arrays.asList(2, 4, 5, 7));
 
         Function1<Integer, Integer> timesTwo = new Function1<Integer, Integer>() {
             @Override
@@ -21,17 +22,14 @@ public class CollectionsTest {
 
         Iterable<Integer> transformedData = Collections.map(timesTwo, originalData);
 
-        final ArrayList<Integer> correctlyTransformedData = new ArrayList<>(originalData);
-        for (int i = 0; i < originalData.size(); i++) {
-            correctlyTransformedData.set(i, originalData.get(i) + originalData.get(i));
-        }
+        final List<Integer> correctlyTransformedData = new ArrayList<>(Arrays.asList(4, 8, 10, 14));
 
         assertEquals(transformedData, correctlyTransformedData);
     }
 
     @Test
     public void testFilter() {
-        final ArrayList<Integer> originalData = new ArrayList<>(Arrays.asList(2, 5, 4, 7));
+        final List<Integer> originalData = new ArrayList<>(Arrays.asList(2, 5, 4, 7));
 
         Predicate<Integer> isEven = new Predicate<Integer>() {
             @Override
@@ -42,19 +40,14 @@ public class CollectionsTest {
 
         Iterable<Integer> filteredData = Collections.filter(isEven, originalData);
 
-        final ArrayList<Integer> correctlyFilteredData = new ArrayList<>(0);
-        for (Integer x : originalData) {
-            if (x % 2 == 0) {
-                correctlyFilteredData.add(x);
-            }
-        }
+        final List<Integer> correctlyFilteredData = new ArrayList<>(Arrays.asList(2, 4));
 
         assertEquals(filteredData, correctlyFilteredData);
     }
 
     @Test
     public void testTakeWhile() {
-        final ArrayList<Integer> originalData = new ArrayList<>(Arrays.asList(2, 0, 5, 4, 7));
+        final List<Integer> originalData = new ArrayList<>(Arrays.asList(2, 0, 5, 4, 7));
 
         Predicate<Integer> isEven = new Predicate<Integer>() {
             @Override
@@ -65,20 +58,14 @@ public class CollectionsTest {
 
         Iterable<Integer> shortenedData = Collections.takeWhile(isEven, originalData);
 
-        final ArrayList<Integer> correctlyShortenedData = new ArrayList<>(0);
-        for (Integer x : originalData) {
-            if (x % 2 != 0) {
-                break;
-            }
-            correctlyShortenedData.add(x);
-        }
+        final List<Integer> correctlyShortenedData = new ArrayList<>(Arrays.asList(2, 0));
 
         assertEquals(shortenedData, correctlyShortenedData);
     }
 
     @Test
     public void testTakeUnless() {
-        final ArrayList<Integer> originalData = new ArrayList<>(Arrays.asList(3, 4, 7, 9, 0));
+        final List<Integer> originalData = new ArrayList<>(Arrays.asList(3, 4, 7, 9, 0));
 
         Predicate<Integer> isEven = new Predicate<Integer>() {
             @Override
@@ -89,20 +76,14 @@ public class CollectionsTest {
 
         Iterable<Integer> shortenedData = Collections.takeUnless(isEven, originalData);
 
-        final ArrayList<Integer> correctlyShortenedData = new ArrayList<>(0);
-        for (Integer x : originalData) {
-            if (x % 2 == 0) {
-                break;
-            }
-            correctlyShortenedData.add(x);
-        }
+        final List<Integer> correctlyShortenedData = new ArrayList<>(Arrays.asList(3));
 
         assertEquals(shortenedData, correctlyShortenedData);
     }
 
     @Test
     public void testFoldl() {
-        final ArrayList<Integer> originalData = new ArrayList<>(Arrays.asList(3, 4, 7, 9, 0));
+        final List<Integer> originalData = new ArrayList<>(Arrays.asList(3, 4, 7, 9, 0));
 
         Function2<Object, Object, Integer> sum = new Function2<Object, Object, Integer>() {
             @Override
@@ -113,17 +94,14 @@ public class CollectionsTest {
 
         Number s = Collections.foldl(sum, 0, originalData);
 
-        Integer answer = 0;
-        for (Integer x : originalData) {
-            answer += x;
-        }
+        Integer answer = 23;
 
         assertEquals(s, answer);
     }
 
     @Test
     public void testFoldr() {
-        final ArrayList<Integer> originalData = new ArrayList<>(Arrays.asList(3, 4, 7, 9, 3));
+        final List<Integer> originalData = new ArrayList<>(Arrays.asList(3, 4, 7, 9, 3));
 
         Function2<Object, Object, Integer> sum = new Function2<Object, Object, Integer>() {
             @Override
@@ -134,10 +112,7 @@ public class CollectionsTest {
 
         Number s = Collections.foldr(sum, 0, originalData);
 
-        Integer answer = 0;
-        for (Integer x : originalData) {
-            answer += x;
-        }
+        Integer answer = 26;
 
         assertEquals(s, answer);
     }

@@ -25,7 +25,7 @@ public class Function1Test {
         Function1<Integer, Integer> composition = timesTwo.compose(square);
 
         final int arg = 5;
-        final int answer = (arg + arg) * (arg + arg);
+        final int answer = 100;
 
         assertEquals(composition.apply(arg).intValue(), answer);
     }

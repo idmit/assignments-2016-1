@@ -26,7 +26,7 @@ public class Function2Test {
 
         String template = "Ax";
         final int times = 2;
-        String answer = (new String(new char[times]).replace("\0", template)).toUpperCase();
+        String answer = "AXAX";
 
         assertEquals(composition.apply(template, times), answer);
     }
@@ -45,7 +45,7 @@ public class Function2Test {
         Function1<Integer, String> repeatTemplate = repeat.bind1(template);
 
         final int times = 2;
-        String answer = new String(new char[times]).replace("\0", template);
+        String answer = "AxAx";
 
         assertEquals(repeatTemplate.apply(times), answer);
     }
@@ -64,7 +64,7 @@ public class Function2Test {
         Function1<String, String> repeatTimes = repeat.bind2(times);
 
         String template = "Ax";
-        String answer = new String(new char[times]).replace("\0", template);
+        String answer = "AxAx";
 
         assertEquals(repeatTimes.apply(template), answer);
     }
@@ -82,7 +82,7 @@ public class Function2Test {
 
         String template = "Ax";
         final int times = 2;
-        String answer = new String(new char[times]).replace("\0", template);
+        String answer = "AxAx";
 
         assertEquals(curried.apply(template).apply(times), answer);
     }
