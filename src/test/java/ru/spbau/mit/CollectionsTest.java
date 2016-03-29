@@ -94,7 +94,7 @@ public class CollectionsTest {
 
         Number s = Collections.foldl(diff, 0, originalData);
 
-        Integer answer = -23;
+        final Integer answer = -23;
 
         assertEquals(s, answer);
     }
@@ -112,7 +112,7 @@ public class CollectionsTest {
 
         Number s = Collections.foldr(diff, 0, originalData);
 
-        Integer answer = -3;
+        final Integer answer = -3;
 
         assertEquals(s, answer);
     }
