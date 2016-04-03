@@ -32,18 +32,18 @@ public class PredicateTest {
         final int oddNumber = 11;
         final int otherEvenNumber = 20;
 
-        assertEquals(conjunction.apply(oddNumber), false);
-        assertEquals(sideEffect[0], false);
+        assertEquals(false, conjunction.apply(oddNumber));
+        assertEquals(false, sideEffect[0]);
 
         sideEffect[0] = false;
 
-        assertEquals(conjunction.apply(otherEvenNumber), false);
-        assertEquals(sideEffect[0], true);
+        assertEquals(false, conjunction.apply(otherEvenNumber));
+        assertEquals(true, sideEffect[0]);
 
         sideEffect[0] = false;
 
-        assertEquals(conjunction.apply(evenNumber), true);
-        assertEquals(sideEffect[0], true);
+        assertEquals(true, conjunction.apply(evenNumber));
+        assertEquals(true, sideEffect[0]);
     }
 
     @Test
@@ -73,18 +73,18 @@ public class PredicateTest {
         final int oddNumber = 11;
         final int otherEvenNumber = 20;
 
-        assertEquals(disjunction.apply(oddNumber), true);
-        assertEquals(sideEffect[0], false);
+        assertEquals(true, disjunction.apply(oddNumber));
+        assertEquals(false, sideEffect[0]);
 
         sideEffect[0] = false;
 
-        assertEquals(disjunction.apply(otherEvenNumber), false);
-        assertEquals(sideEffect[0], true);
+        assertEquals(false, disjunction.apply(otherEvenNumber));
+        assertEquals(true, sideEffect[0]);
 
         sideEffect[0] = false;
 
-        assertEquals(disjunction.apply(evenNumber), true);
-        assertEquals(sideEffect[0], true);
+        assertEquals(true, disjunction.apply(evenNumber));
+        assertEquals(true, sideEffect[0]);
     }
 
     @Test
@@ -99,10 +99,10 @@ public class PredicateTest {
         Predicate<Integer> negatedEven = isEven.not();
 
         final int evenNumber = 10;
-        assertEquals(negatedEven.apply(evenNumber), false);
+        assertEquals(false, negatedEven.apply(evenNumber));
 
         final int oddNumber = 5;
-        assertEquals(negatedEven.apply(oddNumber), true);
+        assertEquals(true, negatedEven.apply(oddNumber));
     }
 
     @Test

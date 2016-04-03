@@ -28,7 +28,7 @@ public class Function2Test {
         final int times = 2;
         String answer = "AXAX";
 
-        assertEquals(composition.apply(template, times), answer);
+        assertEquals(answer, composition.apply(template, times));
     }
 
     @Test
@@ -47,7 +47,7 @@ public class Function2Test {
         final int times = 2;
         String answer = "AxAx";
 
-        assertEquals(repeatTemplate.apply(times), answer);
+        assertEquals(answer, repeatTemplate.apply(times));
     }
 
     @Test
@@ -66,7 +66,7 @@ public class Function2Test {
         String template = "Ax";
         String answer = "AxAx";
 
-        assertEquals(repeatTimes.apply(template), answer);
+        assertEquals(answer, repeatTimes.apply(template));
     }
 
     @Test
@@ -84,7 +84,7 @@ public class Function2Test {
         final int times = 2;
         String answer = "AxAx";
 
-        assertEquals(curried.apply(template).apply(times), answer);
+        assertEquals(answer, curried.apply(template).apply(times));
     }
 
     @Test
@@ -104,6 +104,6 @@ public class Function2Test {
         final int times = 2;
         String answer = "AxAx";
 
-        assertEquals(curried.apply(template).apply(times), answer);
+        assertEquals(answer, curried.apply(template).apply(times));
     }
 }

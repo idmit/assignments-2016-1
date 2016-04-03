@@ -24,7 +24,7 @@ public class CollectionsTest {
 
         final List<Integer> correctlyTransformedData = new ArrayList<>(Arrays.asList(4, 8, 10, 14));
 
-        assertEquals(transformedData, correctlyTransformedData);
+        assertEquals(correctlyTransformedData, transformedData);
     }
 
     @Test
@@ -42,7 +42,7 @@ public class CollectionsTest {
 
         final List<Integer> correctlyFilteredData = new ArrayList<>(Arrays.asList(2, 4));
 
-        assertEquals(filteredData, correctlyFilteredData);
+        assertEquals(correctlyFilteredData, filteredData);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class CollectionsTest {
 
         final List<Integer> correctlyShortenedData = new ArrayList<>(Arrays.asList(2, 0));
 
-        assertEquals(shortenedData, correctlyShortenedData);
+        assertEquals(correctlyShortenedData, shortenedData);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class CollectionsTest {
 
         final List<Integer> correctlyShortenedData = new ArrayList<>(Arrays.asList(3));
 
-        assertEquals(shortenedData, correctlyShortenedData);
+        assertEquals(correctlyShortenedData, shortenedData);
     }
 
     @Test
@@ -96,7 +96,7 @@ public class CollectionsTest {
 
         final Integer answer = -23;
 
-        assertEquals(s, answer);
+        assertEquals(answer, s);
     }
 
     @Test
@@ -114,7 +114,7 @@ public class CollectionsTest {
 
         final Integer answer = -3;
 
-        assertEquals(s, answer);
+        assertEquals(answer, s);
     }
 
     @Test
@@ -135,6 +135,6 @@ public class CollectionsTest {
 
         final List<Integer> correctlyTransformedData = new ArrayList<>(Arrays.asList(4, 8, 10, 14));
 
-        assertEquals(transformedNumData, correctlyTransformedData);
+        assertEquals(correctlyTransformedData, transformedNumData);
     }
 }

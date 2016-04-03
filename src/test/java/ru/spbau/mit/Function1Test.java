@@ -27,6 +27,6 @@ public class Function1Test {
         final int arg = 5;
         final int answer = 100;
 
-        assertEquals(composition.apply(arg).intValue(), answer);
+        assertEquals(answer, composition.apply(arg).intValue());
     }
 }
