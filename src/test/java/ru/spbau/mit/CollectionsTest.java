@@ -8,6 +8,20 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CollectionsTest {
+    static final Predicate<Integer> IS_EVEN = new Predicate<Integer>() {
+        @Override
+        public Boolean apply(Integer x) {
+            return x % 2 == 0;
+        }
+    };
+
+    static final Function2<Object, Object, Integer> DIFF = new Function2<Object, Object, Integer>() {
+        @Override
+        public Integer apply(Object x, Object y) {
+            return (Integer) x - (Integer) y;
+        }
+    };
+
     @Test
     public void testMap() {
         final List<Integer> originalData = Arrays.asList(2, 4, 5, 7);
@@ -30,14 +44,7 @@ public class CollectionsTest {
     public void testFilter() {
         final List<Integer> originalData = Arrays.asList(2, 5, 4, 7);
 
-        Predicate<Integer> isEven = new Predicate<Integer>() {
-            @Override
-            public Boolean apply(Integer x) {
-                return x % 2 == 0;
-            }
-        };
-
-        Iterable<Integer> filteredData = Collections.filter(isEven, originalData);
+        Iterable<Integer> filteredData = Collections.filter(IS_EVEN, originalData);
 
         final List<Integer> correctlyFilteredData = Arrays.asList(2, 4);
 
@@ -48,14 +55,7 @@ public class CollectionsTest {
     public void testTakeWhile() {
         final List<Integer> originalData = Arrays.asList(2, 0, 5, 4, 7);
 
-        Predicate<Integer> isEven = new Predicate<Integer>() {
-            @Override
-            public Boolean apply(Integer x) {
-                return x % 2 == 0;
-            }
-        };
-
-        Iterable<Integer> shortenedData = Collections.takeWhile(isEven, originalData);
+        Iterable<Integer> shortenedData = Collections.takeWhile(IS_EVEN, originalData);
 
         final List<Integer> correctlyShortenedData = Arrays.asList(2, 0);
 
@@ -66,14 +66,7 @@ public class CollectionsTest {
     public void testTakeUnless() {
         final List<Integer> originalData = Arrays.asList(3, 4, 7, 9, 0);
 
-        Predicate<Integer> isEven = new Predicate<Integer>() {
-            @Override
-            public Boolean apply(Integer x) {
-                return x % 2 == 0;
-            }
-        };
-
-        Iterable<Integer> shortenedData = Collections.takeUnless(isEven, originalData);
+        Iterable<Integer> shortenedData = Collections.takeUnless(IS_EVEN, originalData);
 
         final List<Integer> correctlyShortenedData = Arrays.asList(3);
 
@@ -84,14 +77,7 @@ public class CollectionsTest {
     public void testFoldl() {
         final List<Integer> originalData = Arrays.asList(3, 4, 7, 9);
 
-        Function2<Object, Object, Integer> diff = new Function2<Object, Object, Integer>() {
-            @Override
-            public Integer apply(Object x, Object y) {
-                return (Integer) x - (Integer) y;
-            }
-        };
-
-        Number s = Collections.foldl(diff, 0, originalData);
+        Number s = Collections.foldl(DIFF, 0, originalData);
 
         final Integer answer = -23;
 
@@ -102,14 +88,7 @@ public class CollectionsTest {
     public void testFoldr() {
         final List<Integer> originalData = Arrays.asList(3, 4, 7, 9);
 
-        Function2<Object, Object, Integer> diff = new Function2<Object, Object, Integer>() {
-            @Override
-            public Integer apply(Object x, Object y) {
-                return (Integer) x - (Integer) y;
-            }
-        };
-
-        Number s = Collections.foldr(diff, 0, originalData);
+        Number s = Collections.foldr(DIFF, 0, originalData);
 
         final Integer answer = -3;
 

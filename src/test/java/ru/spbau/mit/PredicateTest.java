@@ -5,104 +5,91 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class PredicateTest {
+    static final int SIXTEEN = 16;
+    static final int ODD_INT = 11;
+    static final int EVEN_INT = 22; // not 16
+
+    static final Predicate<Integer> IS_EVEN = new Predicate<Integer>() {
+        @Override
+        public Boolean apply(Integer x) {
+            return x % 2 == 0;
+        }
+    };
+
+    static final Predicate<Integer> IS_ODD = new Predicate<Integer>() {
+        @Override
+        public Boolean apply(Integer x) {
+            return x % 2 == 1;
+        }
+    };
+
+    static final Predicate<Object> IS_SIXTEEN = new Predicate<Object>() {
+        @Override
+        public Boolean apply(Object x) {
+            Integer in = (Integer) x;
+            return in.equals(SIXTEEN);
+        }
+    };
+
+    static final Predicate<Object> ALWAYS_THROWS = new Predicate<Object>() {
+        @Override
+        public Boolean apply(Object x) {
+            throw new RuntimeException("Exception throwing predicate was applied.");
+        }
+    };
+
     @Test
     public void testAnd() {
-        final boolean[] sideEffect = {false};
+        Predicate<Integer> conjunction = IS_EVEN.and(IS_SIXTEEN);
 
-        Predicate<Integer> isEven = new Predicate<Integer>() {
-            @Override
-            public Boolean apply(Integer x) {
-                return x % 2 == 0;
-            }
-        };
+        assertEquals(false, conjunction.apply(ODD_INT));
+        assertEquals(false, conjunction.apply(EVEN_INT));
+        assertEquals(true, conjunction.apply(SIXTEEN));
+    }
 
-        final int evenNumber = 16;
+    @Test
+    public void testAndShortCircuits() {
+        Predicate<Integer> conjunction = IS_EVEN.and(ALWAYS_THROWS);
 
-        Predicate<Object> isParticularEvenNumberWithSideEffects = new Predicate<Object>() {
-            @Override
-            public Boolean apply(Object x) {
-                sideEffect[0] = true;
-                Integer in = (Integer) x;
-                return in.equals(evenNumber);
-            }
-        };
+        assertEquals(false, conjunction.apply(ODD_INT));
+    }
 
-        Predicate<Integer> conjunction = isEven.and(isParticularEvenNumberWithSideEffects);
+    @Test(expected = RuntimeException.class)
+    public void testAndEvaluatesAll() {
+        Predicate<Integer> conjunction = IS_EVEN.and(ALWAYS_THROWS);
 
-        final int oddNumber = 11;
-        final int otherEvenNumber = 20;
-
-        assertEquals(false, conjunction.apply(oddNumber));
-        assertEquals(false, sideEffect[0]);
-
-        sideEffect[0] = false;
-
-        assertEquals(false, conjunction.apply(otherEvenNumber));
-        assertEquals(true, sideEffect[0]);
-
-        sideEffect[0] = false;
-
-        assertEquals(true, conjunction.apply(evenNumber));
-        assertEquals(true, sideEffect[0]);
+        assertEquals(false, conjunction.apply(EVEN_INT));
     }
 
     @Test
     public void testOr() {
-        final boolean[] sideEffect = {false};
+        Predicate<Integer> disjunction = IS_ODD.or(IS_SIXTEEN);
 
-        Predicate<Integer> isOdd = new Predicate<Integer>() {
-            @Override
-            public Boolean apply(Integer x) {
-                return x % 2 == 1;
-            }
-        };
+        assertEquals(true, disjunction.apply(ODD_INT));
+        assertEquals(false, disjunction.apply(EVEN_INT));
+        assertEquals(true, disjunction.apply(SIXTEEN));
+    }
 
-        final int evenNumber = 10;
+    @Test
+    public void testOrShortCircuits() {
+        Predicate<Integer> disjunction = IS_ODD.or(ALWAYS_THROWS);
 
-        Predicate<Object> isParticularEvenNumberWithSideEffects = new Predicate<Object>() {
-            @Override
-            public Boolean apply(Object x) {
-                sideEffect[0] = true;
-                Integer in = (Integer) x;
-                return in.equals(evenNumber);
-            }
-        };
+        assertEquals(true, disjunction.apply(ODD_INT));
+    }
 
-        Predicate<Integer> disjunction = isOdd.or(isParticularEvenNumberWithSideEffects);
+    @Test(expected = RuntimeException.class)
+    public void testOrEvaluatesAll() {
+        Predicate<Integer> disjunction = IS_ODD.or(ALWAYS_THROWS);
 
-        final int oddNumber = 11;
-        final int otherEvenNumber = 20;
-
-        assertEquals(true, disjunction.apply(oddNumber));
-        assertEquals(false, sideEffect[0]);
-
-        sideEffect[0] = false;
-
-        assertEquals(false, disjunction.apply(otherEvenNumber));
-        assertEquals(true, sideEffect[0]);
-
-        sideEffect[0] = false;
-
-        assertEquals(true, disjunction.apply(evenNumber));
-        assertEquals(true, sideEffect[0]);
+        assertEquals(false, disjunction.apply(EVEN_INT));
     }
 
     @Test
     public void testNot() {
-        Predicate<Integer> isEven = new Predicate<Integer>() {
-            @Override
-            public Boolean apply(Integer x) {
-                return x % 2 == 0;
-            }
-        };
+        Predicate<Integer> negatedEven = IS_EVEN.not();
 
-        Predicate<Integer> negatedEven = isEven.not();
-
-        final int evenNumber = 10;
-        assertEquals(false, negatedEven.apply(evenNumber));
-
-        final int oddNumber = 5;
-        assertEquals(true, negatedEven.apply(oddNumber));
+        assertEquals(false, negatedEven.apply(EVEN_INT));
+        assertEquals(true, negatedEven.apply(ODD_INT));
     }
 
     @Test

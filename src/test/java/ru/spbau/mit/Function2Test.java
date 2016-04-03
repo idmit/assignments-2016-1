@@ -5,15 +5,15 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class Function2Test {
+    static final Function2<String, Integer, String> REPEAT_STRING = new Function2<String, Integer, String>() {
+        @Override
+        public String apply(String s, Integer x) {
+            return new String(new char[x]).replace("\0", s);
+        }
+    };
+
     @Test
     public void testCompose() {
-        Function2<String, Integer, String> repeatString = new Function2<String, Integer, String>() {
-            @Override
-            public String apply(String s, Integer x) {
-                return new String(new char[x]).replace("\0", s);
-            }
-        };
-
         Function1<Object, String> objToUpper = new Function1<Object, String>() {
             @Override
             public String apply(Object x) {
@@ -22,7 +22,7 @@ public class Function2Test {
             }
         };
 
-        Function2<String, Integer, String> composition = repeatString.compose(objToUpper);
+        Function2<String, Integer, String> composition = REPEAT_STRING.compose(objToUpper);
 
         String template = "Ax";
         final int times = 2;
@@ -33,16 +33,9 @@ public class Function2Test {
 
     @Test
     public void testBind1() {
-        Function2<String, Integer, String> repeat = new Function2<String, Integer, String>() {
-            @Override
-            public String apply(String s, Integer x) {
-                return new String(new char[x]).replace("\0", s);
-            }
-        };
-
         String template = "Ax";
 
-        Function1<Integer, String> repeatTemplate = repeat.bind1(template);
+        Function1<Integer, String> repeatTemplate = REPEAT_STRING.bind1(template);
 
         final int times = 2;
         String answer = "AxAx";
@@ -52,16 +45,9 @@ public class Function2Test {
 
     @Test
     public void testBind2() {
-        Function2<String, Integer, String> repeat = new Function2<String, Integer, String>() {
-            @Override
-            public String apply(String s, Integer x) {
-                return new String(new char[x]).replace("\0", s);
-            }
-        };
-
         final int times = 2;
 
-        Function1<String, String> repeatTimes = repeat.bind2(times);
+        Function1<String, String> repeatTimes = REPEAT_STRING.bind2(times);
 
         String template = "Ax";
         String answer = "AxAx";
@@ -71,14 +57,7 @@ public class Function2Test {
 
     @Test
     public void testCurry() {
-        Function2<String, Integer, String> repeat = new Function2<String, Integer, String>() {
-            @Override
-            public String apply(String s, Integer x) {
-                return new String(new char[x]).replace("\0", s);
-            }
-        };
-
-        Function1<String, Function1<Integer, String>> curried = repeat.curry();
+        Function1<String, Function1<Integer, String>> curried = REPEAT_STRING.curry();
 
         String template = "Ax";
         final int times = 2;
