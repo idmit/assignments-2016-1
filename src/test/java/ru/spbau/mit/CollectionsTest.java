@@ -4,14 +4,13 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class CollectionsTest {
     @Test
     public void testMap() {
-        final List<Integer> originalData = new ArrayList<>(Arrays.asList(2, 4, 5, 7));
+        final List<Integer> originalData = Arrays.asList(2, 4, 5, 7);
 
         Function1<Integer, Integer> timesTwo = new Function1<Integer, Integer>() {
             @Override
@@ -22,14 +21,14 @@ public class CollectionsTest {
 
         Iterable<Integer> transformedData = Collections.map(timesTwo, originalData);
 
-        final List<Integer> correctlyTransformedData = new ArrayList<>(Arrays.asList(4, 8, 10, 14));
+        final List<Integer> correctlyTransformedData = Arrays.asList(4, 8, 10, 14);
 
         assertEquals(correctlyTransformedData, transformedData);
     }
 
     @Test
     public void testFilter() {
-        final List<Integer> originalData = new ArrayList<>(Arrays.asList(2, 5, 4, 7));
+        final List<Integer> originalData = Arrays.asList(2, 5, 4, 7);
 
         Predicate<Integer> isEven = new Predicate<Integer>() {
             @Override
@@ -40,14 +39,14 @@ public class CollectionsTest {
 
         Iterable<Integer> filteredData = Collections.filter(isEven, originalData);
 
-        final List<Integer> correctlyFilteredData = new ArrayList<>(Arrays.asList(2, 4));
+        final List<Integer> correctlyFilteredData = Arrays.asList(2, 4);
 
         assertEquals(correctlyFilteredData, filteredData);
     }
 
     @Test
     public void testTakeWhile() {
-        final List<Integer> originalData = new ArrayList<>(Arrays.asList(2, 0, 5, 4, 7));
+        final List<Integer> originalData = Arrays.asList(2, 0, 5, 4, 7);
 
         Predicate<Integer> isEven = new Predicate<Integer>() {
             @Override
@@ -58,14 +57,14 @@ public class CollectionsTest {
 
         Iterable<Integer> shortenedData = Collections.takeWhile(isEven, originalData);
 
-        final List<Integer> correctlyShortenedData = new ArrayList<>(Arrays.asList(2, 0));
+        final List<Integer> correctlyShortenedData = Arrays.asList(2, 0);
 
         assertEquals(correctlyShortenedData, shortenedData);
     }
 
     @Test
     public void testTakeUnless() {
-        final List<Integer> originalData = new ArrayList<>(Arrays.asList(3, 4, 7, 9, 0));
+        final List<Integer> originalData = Arrays.asList(3, 4, 7, 9, 0);
 
         Predicate<Integer> isEven = new Predicate<Integer>() {
             @Override
@@ -76,14 +75,14 @@ public class CollectionsTest {
 
         Iterable<Integer> shortenedData = Collections.takeUnless(isEven, originalData);
 
-        final List<Integer> correctlyShortenedData = new ArrayList<>(Arrays.asList(3));
+        final List<Integer> correctlyShortenedData = Arrays.asList(3);
 
         assertEquals(correctlyShortenedData, shortenedData);
     }
 
     @Test
     public void testFoldl() {
-        final List<Integer> originalData = new ArrayList<>(Arrays.asList(3, 4, 7, 9));
+        final List<Integer> originalData = Arrays.asList(3, 4, 7, 9);
 
         Function2<Object, Object, Integer> diff = new Function2<Object, Object, Integer>() {
             @Override
@@ -101,7 +100,7 @@ public class CollectionsTest {
 
     @Test
     public void testFoldr() {
-        final List<Integer> originalData = new ArrayList<>(Arrays.asList(3, 4, 7, 9));
+        final List<Integer> originalData = Arrays.asList(3, 4, 7, 9);
 
         Function2<Object, Object, Integer> diff = new Function2<Object, Object, Integer>() {
             @Override
@@ -119,7 +118,7 @@ public class CollectionsTest {
 
     @Test
     public void testFancyMap() {
-        final List<Integer> originalData = new ArrayList<>(Arrays.asList(2, 4, 5, 7));
+        final List<Integer> originalData = Arrays.asList(2, 4, 5, 7);
 
         Function1<Integer, Integer> timesTwo = new Function1<Integer, Integer>() {
             @Override
@@ -133,7 +132,7 @@ public class CollectionsTest {
         // This feature can be useful and doesn't interfere with straightforward map.
         Iterable<Number> transformedNumData = Collections.<Integer, Number>map(timesTwo, originalData);
 
-        final List<Integer> correctlyTransformedData = new ArrayList<>(Arrays.asList(4, 8, 10, 14));
+        final List<Integer> correctlyTransformedData = Arrays.asList(4, 8, 10, 14);
 
         assertEquals(correctlyTransformedData, transformedNumData);
     }
