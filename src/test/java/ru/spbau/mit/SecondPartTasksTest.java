@@ -46,7 +46,7 @@ public class SecondPartTasksTest {
 
     @Test
     public void testPiDividedBy4() {
-        assertEquals(Math.PI / 4, SecondPartTasks.piDividedBy4(), 0.01);
+        assertEquals(Math.PI / 4, SecondPartTasks.piDividedBy4(), 0.05);
     }
 
     @Test
