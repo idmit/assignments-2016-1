@@ -62,22 +62,14 @@ public final class FirstPartTasks {
     // Альбом в котором максимум рейтинга минимален
     // (если в альбоме нет ни одного трека, считать, что максимум рейтинга в нем --- 0)
     public static Optional<Album> minMaxRating(Stream<Album> albums) {
-        return albums.collect(Collectors.groupingBy(x -> x, Collectors.mapping(x -> x.getTracks().stream()
-                .mapToInt(Track::getRating).max().orElse(0), Collectors.collectingAndThen(Collectors.toList(),
-                x -> x.get(0)))))
-                .entrySet().stream()
-                .min(Comparator.comparingInt(Map.Entry::getValue))
-                .map(x -> x.getKey());
+        return albums.min(Comparator.comparing(a -> a.getTracks().stream()
+                .mapToInt(Track::getRating).max().orElse(0)));
     }
 
     // Список альбомов, отсортированный по убыванию среднего рейтинга его треков (0, если треков нет)
     public static List<Album> sortByAverageRating(Stream<Album> albums) {
-        return albums.collect(Collectors.groupingBy(x -> x, Collectors.mapping(x -> x.getTracks().stream()
-                .mapToInt(Track::getRating).average().orElse(0), Collectors.collectingAndThen(Collectors.toList(),
-                x -> x.get(0)))))
-                .entrySet().stream()
-                .sorted(Comparator.comparing(Map.Entry::getValue, Comparator.reverseOrder()))
-                .map(x -> x.getKey())
+        return albums.sorted(Comparator.comparing(a -> a.getTracks().stream()
+                .mapToInt(Track::getRating).average().orElse(0), Comparator.reverseOrder()))
                 .collect(Collectors.toList());
     }
 

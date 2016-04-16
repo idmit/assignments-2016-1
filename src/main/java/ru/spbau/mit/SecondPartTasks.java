@@ -56,12 +56,11 @@ public final class SecondPartTasks {
     // Дано отображение из имени автора в список с содержанием его произведений.
     // Надо вычислить, чья общая длина произведений наибольшая.
     public static String findPrinter(Map<String, List<String>> compositions) {
-        Map<String, Integer> summaryLength = compositions.entrySet().stream().collect(Collectors.toMap(Map
-                .Entry::getKey, p -> p.getValue().stream().mapToInt(String::length).sum()));
-
         // Use `get` on Option, because operation should fail if map is empty.
-        return summaryLength.entrySet().stream().max(Comparator.comparingInt(Map.Entry::getValue)).map(Map
-                .Entry::getKey).get();
+        return compositions.entrySet().stream()
+                .max(Comparator.comparing(p -> p.getValue().stream()
+                        .mapToInt(String::length).sum()
+                )).get().getKey();
     }
 
     // Вы крупный поставщик продуктов. Каждая торговая сеть делает вам заказ в виде Map<Товар, Количество>.
