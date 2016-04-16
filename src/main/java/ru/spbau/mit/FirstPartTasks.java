@@ -87,6 +87,6 @@ public final class FirstPartTasks {
 
     // Вернуть поток из объектов класса 'clazz'
     public static <R> Stream<R> filterIsInstance(Stream<?> s, Class<R> clazz) {
-        return s.filter(x -> clazz.isInstance(x)).map(x -> clazz.cast(x));
+        return s.filter(clazz::isInstance).map(clazz::cast);
     }
 }
