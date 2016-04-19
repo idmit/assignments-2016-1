@@ -49,11 +49,11 @@ public final class Injector {
 
             if (localCandidates.size() < 1) {
                 throw new ImplementationNotFoundException();
-            } else if (localCandidates.size() > 1) {
-                throw new AmbiguousImplementationException();
-            } else {
-                candidates.add(localCandidates.get(0));
             }
+            if (localCandidates.size() > 1) {
+                throw new AmbiguousImplementationException();
+            }
+            candidates.add(localCandidates.get(0));
         }
 
         List<Object> params = new ArrayList<>();
