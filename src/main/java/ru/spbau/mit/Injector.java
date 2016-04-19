@@ -38,27 +38,28 @@ public final class Injector {
             return instance;
         }
 
-        List<Integer> candidates = new ArrayList<>();
-        for (int k = 0; k < parameterTypes.length; k++) {
-            List<Integer> localCandidates = new ArrayList<>();
+        List<Class<?>> concreteParameterTypes = new ArrayList<>();
+        for (Class<?> parameterType : parameterTypes) {
+            Class<?> concreteParameterType = null;
+
             for (int i = 0; i < implementationClasses.size(); i++) {
-                if (parameterTypes[k].isAssignableFrom(implementationClasses.get(i))) {
-                    localCandidates.add(i);
+                if (parameterType.isAssignableFrom(implementationClasses.get(i))) {
+                    if (concreteParameterType != null) {
+                        throw new AmbiguousImplementationException();
+                    }
+                    concreteParameterType = implementationClasses.get(i);
                 }
             }
 
-            if (localCandidates.size() < 1) {
+            if (concreteParameterType == null) {
                 throw new ImplementationNotFoundException();
             }
-            if (localCandidates.size() > 1) {
-                throw new AmbiguousImplementationException();
-            }
-            candidates.add(localCandidates.get(0));
+            concreteParameterTypes.add(concreteParameterType);
         }
 
         List<Object> params = new ArrayList<>();
-        for (Integer idx : candidates) {
-            params.add(getDependencyInstance(implementationClasses.get(idx), implementationClasses));
+        for (Class<?> concreteParameterType : concreteParameterTypes) {
+            params.add(getDependencyInstance(concreteParameterType, implementationClasses));
         }
 
         Object instance = constr.newInstance(params.toArray());
