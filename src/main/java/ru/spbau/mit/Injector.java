@@ -80,6 +80,8 @@ public final class Injector {
             implementationClasses.add(Class.forName(className));
         }
 
+        implementationClasses.add(rootClass);
+
         return getDependencyInstance(rootClass, implementationClasses);
     }
 }
