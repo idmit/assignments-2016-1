@@ -3,16 +3,13 @@ package ru.spbau.mit;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-/**
- * Created by idmit on 07/05/16.
- */
 class LightFutureImpl<R> implements LightFuture<R>, Runnable {
 
-    // Supplier returning result
-    private final Supplier<R> supplier;
+    // Runnable performing result evaluation
+    private final Runnable task;
 
     // Flag for ensuring that supplier evaluates only once
-    private boolean alreadyRun = false;
+    private volatile boolean alreadyRun = false;
 
     // Value keeping any exception thrown by supplier
     private volatile Throwable thrownObject;
@@ -25,8 +22,48 @@ class LightFutureImpl<R> implements LightFuture<R>, Runnable {
 
     private volatile R result;
 
-    LightFutureImpl(Supplier<R> supplier) {
-        this.supplier = supplier;
+    private ThreadPoolImpl threadPool;
+    LightFuture<?> dependency = null;
+
+    LightFutureImpl(Supplier<R> supplier, ThreadPoolImpl threadPool) {
+        this.threadPool = threadPool;
+
+        task = () -> {
+            try {
+                result = supplier.get();
+            } catch (Exception e) {
+                thrownObject = e;
+            }
+
+            onCompletion();
+        };
+    }
+
+    private <X> LightFutureImpl(LightFuture<X> dependency, Function<? super X, ? extends R> function,
+                                ThreadPoolImpl threadPool) {
+        this.threadPool = threadPool;
+        this.dependency = dependency;
+
+        task = () -> {
+            try {
+                result = function.apply(dependency.get());
+            } catch (Exception e) {
+                thrownObject = e;
+            }
+
+            onCompletion();
+        };
+    }
+
+    private void onCompletion() {
+        synchronized (syncExecution) {
+            isReady = true;
+            // Notify all threads waiting for the result
+            syncExecution.notifyAll();
+        }
+        synchronized (threadPool.syncDelayedTasks) {
+            threadPool.syncDelayedTasks.notify();
+        }
     }
 
     @Override
@@ -53,8 +90,16 @@ class LightFutureImpl<R> implements LightFuture<R>, Runnable {
     }
 
     @Override
-    public <U> LightFuture<U> thenApply(Function<? super R, ? extends U> f) {
-        return null;
+    public <U> LightFuture<U> thenApply(Function<? super R, ? extends U> function) {
+        LightFutureImpl<U> continuation = new LightFutureImpl<>(this, function, this.threadPool);
+
+        threadPool.delayTask(continuation);
+
+        synchronized (threadPool.syncDelayedTasks) {
+            threadPool.syncDelayedTasks.notify();
+        }
+
+        return continuation;
     }
 
     @Override
@@ -65,17 +110,6 @@ class LightFutureImpl<R> implements LightFuture<R>, Runnable {
         }
 
         alreadyRun = true;
-
-        try {
-            result = supplier.get();
-        } catch (Exception e) {
-            thrownObject = e;
-        }
-
-        synchronized (syncExecution) {
-            isReady = true;
-            // Notify all threads waiting for the result
-            syncExecution.notifyAll();
-        }
+        task.run();
     }
 }
