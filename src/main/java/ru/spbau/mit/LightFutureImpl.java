@@ -14,7 +14,7 @@ class LightFutureImpl<R> implements LightFuture<R>, Runnable {
     // Value keeping any exception thrown by supplier
     private volatile Throwable thrownObject;
 
-    // Object for syncing operations regarding result
+    // Object for syncing operations regarding result access
     private final Object syncExecution = new Object();
 
     // Flag for if result is ready
@@ -22,7 +22,11 @@ class LightFutureImpl<R> implements LightFuture<R>, Runnable {
 
     private volatile R result;
 
+    // ThreadPool instance that produced this LightFuture instance
+    // It's needed for continuation construction
     private ThreadPoolImpl threadPool;
+
+    // Reference to a dependency if this LightFuture instance is a continuation
     LightFuture<?> dependency = null;
 
     LightFutureImpl(Supplier<R> supplier, ThreadPoolImpl threadPool) {
@@ -32,6 +36,7 @@ class LightFutureImpl<R> implements LightFuture<R>, Runnable {
             try {
                 result = supplier.get();
             } catch (Exception e) {
+                // Keep an exception to rethrow
                 thrownObject = e;
             }
 
@@ -46,8 +51,11 @@ class LightFutureImpl<R> implements LightFuture<R>, Runnable {
 
         task = () -> {
             try {
+                // Thread won't wait here for get() because this task
+                // doesn't get run before its dependency is ready
                 result = function.apply(dependency.get());
             } catch (Exception e) {
+                // Keep an exception to rethrow
                 thrownObject = e;
             }
 
@@ -62,6 +70,9 @@ class LightFutureImpl<R> implements LightFuture<R>, Runnable {
             syncExecution.notifyAll();
         }
         synchronized (threadPool.syncDelayedTasks) {
+            // If this task is a dependency then
+            // a thread promoting delayed tasks should be notified
+            // Maybe it can promote something
             threadPool.syncDelayedTasks.notify();
         }
     }
@@ -95,6 +106,8 @@ class LightFutureImpl<R> implements LightFuture<R>, Runnable {
 
         threadPool.delayTask(continuation);
 
+        // If `this` task is ready, promoting thread won't be notified about this
+        // So notify it just in case
         synchronized (threadPool.syncDelayedTasks) {
             threadPool.syncDelayedTasks.notify();
         }

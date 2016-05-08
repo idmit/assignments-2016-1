@@ -19,6 +19,7 @@ public class ThreadPoolImpl implements ThreadPool {
     // Object for syncing operations with queue of waiting tasks and its size
     final Object syncDelayedTasks = new Object();
 
+    // Tasks placed into this list get removed as soon as their dependency is ready
     private final LinkedList<LightFutureImpl<?>> delayedTasks = new LinkedList<>();
 
     /**
@@ -50,6 +51,10 @@ public class ThreadPoolImpl implements ThreadPool {
         // Create `n` threads with corresponding slots
         IntStream.range(0, n).forEach((x) -> new Thread(new Slot()).start());
 
+        // Start a promoting thread
+        // It continues to work until thread pool is shut down
+        // It waits and gets notified only if some task has been completed or
+        // if a continuation has been created
         (new Thread(() -> {
             // While thread pool is working, promote delayed tasks to waiting tasks
             while (ThreadPoolImpl.this.working) {
@@ -68,7 +73,7 @@ public class ThreadPoolImpl implements ThreadPool {
                         }
                     }
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    // Ignore this
                 }
             }
         })).start();
