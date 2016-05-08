@@ -27,7 +27,7 @@ class LightFutureImpl<R> implements LightFuture<R>, Runnable {
     private ThreadPoolImpl threadPool;
 
     // Reference to a dependency if this LightFuture instance is a continuation
-    LightFuture<?> dependency = null;
+    private LightFuture<?> dependency = null;
 
     LightFutureImpl(Supplier<R> supplier, ThreadPoolImpl threadPool) {
         this.threadPool = threadPool;
@@ -69,11 +69,11 @@ class LightFutureImpl<R> implements LightFuture<R>, Runnable {
             // Notify all threads waiting for the result
             syncExecution.notifyAll();
         }
-        synchronized (threadPool.syncDelayedTasks) {
+        synchronized (threadPool.getSyncDelayedTasks()) {
             // If this task is a dependency then
             // a thread promoting delayed tasks should be notified
             // Maybe it can promote something
-            threadPool.syncDelayedTasks.notify();
+            threadPool.getSyncDelayedTasks().notify();
         }
     }
 
@@ -108,11 +108,15 @@ class LightFutureImpl<R> implements LightFuture<R>, Runnable {
 
         // If `this` task is ready, promoting thread won't be notified about this
         // So notify it just in case
-        synchronized (threadPool.syncDelayedTasks) {
-            threadPool.syncDelayedTasks.notify();
+        synchronized (threadPool.getSyncDelayedTasks()) {
+            threadPool.getSyncDelayedTasks().notify();
         }
 
         return continuation;
+    }
+
+    public LightFuture<?> getDependency() {
+        return dependency;
     }
 
     @Override

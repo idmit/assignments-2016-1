@@ -16,8 +16,9 @@ public class ThreadPoolImpl implements ThreadPool {
     private Queue<LightFutureImpl<?>> waitingTasks = new LinkedList<>();
     private volatile int waitingTasksNumber = 0;
 
-    // Object for syncing operations with queue of waiting tasks and its size
-    final Object syncDelayedTasks = new Object();
+    // Object for syncing operations with list of delayed tasks
+    // It is separate from list itself beacause it can be accessed from outside
+    private final Object syncDelayedTasks = new Object();
 
     // Tasks placed into this list get removed as soon as their dependency is ready
     private final LinkedList<LightFutureImpl<?>> delayedTasks = new LinkedList<>();
@@ -66,7 +67,7 @@ public class ThreadPoolImpl implements ThreadPool {
                         Iterator<LightFutureImpl<?>> it = delayedTasks.iterator();
                         while (it.hasNext()) {
                             LightFutureImpl<?> delayedTask = it.next();
-                            if (delayedTask.dependency.isReady()) {
+                            if (delayedTask.getDependency().isReady()) {
                                 it.remove();
                             }
                             queueTask(delayedTask);
@@ -89,6 +90,10 @@ public class ThreadPoolImpl implements ThreadPool {
             // Notify the first thread that is waiting for a task to be queued
             syncWorkingTasks.notify();
         }
+    }
+
+    Object getSyncDelayedTasks() {
+        return syncDelayedTasks;
     }
 
     <R> void delayTask(LightFutureImpl<R> task) {
