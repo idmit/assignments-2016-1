@@ -21,7 +21,7 @@ public class ThreadPoolImpl implements ThreadPool {
     private final Object syncDelayedTasks = new Object();
 
     // Tasks placed into this list get removed as soon as their dependency is ready
-    private final LinkedList<LightFutureImpl<?>> delayedTasks = new LinkedList<>();
+    private final Queue<LightFutureImpl<?>> delayedTasks = new LinkedList<>();
 
     /**
      * Slot instance is trying to get a task waiting in the queue
