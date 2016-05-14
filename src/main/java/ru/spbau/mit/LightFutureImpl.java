@@ -115,7 +115,7 @@ class LightFutureImpl<R> implements LightFuture<R>, Runnable {
         return continuation;
     }
 
-    public LightFuture<?> getDependency() {
+    LightFuture<?> getDependency() {
         return dependency;
     }
 
