@@ -23,34 +23,9 @@ public class ThreadPoolImpl implements ThreadPool {
     // Tasks placed into this list get removed as soon as their dependency is ready
     private final Queue<LightFutureImpl<?>> delayedTasks = new LinkedList<>();
 
-    /**
-     * Slot instance is trying to get a task waiting in the queue
-     * It stops trying when ThreadPool gets shut down
-     */
-    private class Slot implements Runnable {
-        @Override
-        public void run() {
-            // While thread pool is working, ask for waiting tasks
-            while (ThreadPoolImpl.this.working) {
-                try {
-                    // If there are no tasks waiting then thread waits to fill the slot
-                    // It will continue if new task has been submitted or thread pool got shut down
-                    LightFutureImpl<?> task = getWaitingTask();
-
-                    // Start running task if thread pool hasn't been shut down
-                    if (task != null) {
-                        task.run();
-                    }
-                } catch (InterruptedException e) {
-                    // Ignore this
-                }
-            }
-        }
-    }
-
     public ThreadPoolImpl(int n) {
         // Create `n` threads with corresponding slots
-        IntStream.range(0, n).forEach((x) -> new Thread(new Slot()).start());
+        IntStream.range(0, n).forEach((x) -> new Thread(this::keepFetchingTasks).start());
 
         // Start a promoting thread
         // It continues to work until thread pool is shut down
@@ -78,6 +53,28 @@ public class ThreadPoolImpl implements ThreadPool {
                 }
             }
         })).start();
+    }
+
+    /**
+     * This method is trying to get a task waiting in the queue.
+     * It stops trying when ThreadPool gets shut down.
+     */
+    private void keepFetchingTasks() {
+        // While thread pool is working, ask for waiting tasks
+        while (ThreadPoolImpl.this.working) {
+            try {
+                // If there are no tasks waiting then thread waits to fill the slot
+                // It will continue if new task has been submitted or thread pool got shut down
+                LightFutureImpl<?> task = getWaitingTask();
+
+                // Start running task if thread pool hasn't been shut down
+                if (task != null) {
+                    task.run();
+                }
+            } catch (InterruptedException e) {
+                // Ignore this
+            }
+        }
     }
 
     private <R> void queueTask(LightFutureImpl<R> task) {
