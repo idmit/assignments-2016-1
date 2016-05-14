@@ -16,7 +16,7 @@ public class ThreadPoolImpl implements ThreadPool {
     private Queue<LightFutureImpl<?>> waitingTasks = new LinkedList<>();
 
     // Object for syncing operations with list of delayed tasks
-    // It is separate from list itself beacause it can be accessed from outside
+    // It is separate from list itself because it can be accessed from outside
     private final Object syncDelayedTasks = new Object();
 
     // Tasks placed into this list get removed as soon as their dependency is ready
