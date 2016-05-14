@@ -14,7 +14,6 @@ public class ThreadPoolImpl implements ThreadPool {
 
     // Tasks placed into this queue get removed as soon as there is a free thread in this pool
     private Queue<LightFutureImpl<?>> waitingTasks = new LinkedList<>();
-    private volatile int waitingTasksNumber = 0;
 
     // Object for syncing operations with list of delayed tasks
     // It is separate from list itself beacause it can be accessed from outside
@@ -81,8 +80,6 @@ public class ThreadPoolImpl implements ThreadPool {
         synchronized (syncWorkingTasks) {
             // Queue submitted task
             waitingTasks.add(task);
-            // Increment is thread-safe because of `synchronized` block, not because of `volatile` keyword
-            waitingTasksNumber += 1;
 
             // Notify the first thread that is waiting for a task to be queued
             syncWorkingTasks.notify();
@@ -132,7 +129,7 @@ public class ThreadPoolImpl implements ThreadPool {
         synchronized (syncWorkingTasks) {
             // If there are no waiting tasks, thread waits
             // Thread will be notified on thread pool shutting down or on task queueing
-            while (this.working && waitingTasksNumber == 0) {
+            while (this.working && waitingTasks.size() == 0) {
                 syncWorkingTasks.wait();
             }
 
@@ -142,8 +139,6 @@ public class ThreadPoolImpl implements ThreadPool {
             }
 
             // Otherwise thread gets to fill it's slot with a task
-            // Decrement is thread-safe because of `synchronized` block, not because of `volatile` keyword
-            waitingTasksNumber -= 1;
             return waitingTasks.poll();
         }
     }
