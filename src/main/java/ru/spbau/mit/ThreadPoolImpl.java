@@ -13,7 +13,7 @@ public class ThreadPoolImpl implements ThreadPool {
     private final Object syncWorkingTasks = new Object();
 
     // Tasks placed into this queue get removed as soon as there is a free thread in this pool
-    private Queue<LightFutureImpl<?>> waitingTasks = new LinkedList<>();
+    private final Queue<LightFutureImpl<?>> waitingTasks = new LinkedList<>();
 
     // Object for syncing operations with list of delayed tasks
     // It is separate from list itself because it can be accessed from outside

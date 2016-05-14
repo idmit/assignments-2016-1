@@ -24,7 +24,7 @@ class LightFutureImpl<R> implements LightFuture<R>, Runnable {
 
     // ThreadPool instance that produced this LightFuture instance
     // It's needed for continuation construction
-    private ThreadPoolImpl threadPool;
+    private final ThreadPoolImpl threadPool;
 
     // Reference to a dependency if this LightFuture instance is a continuation
     private LightFuture<?> dependency = null;
