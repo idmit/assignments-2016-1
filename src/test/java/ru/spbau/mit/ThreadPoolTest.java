@@ -3,13 +3,88 @@ package ru.spbau.mit;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 
 public class ThreadPoolTest {
+
+    private class Barrier {
+        private int parties;
+
+        Barrier(int parties) {
+            this.parties = parties;
+        }
+
+        synchronized void await() {
+            if (parties > 1) {
+                parties -= 1;
+                while (parties > 0) {
+                    try {
+                        this.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else if (parties == 1) {
+                synchronized (this) {
+                    parties -= 1;
+                    this.notifyAll();
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testNumberOfThreads() {
+        final int numberOfThreads = 25;
+        final ThreadPoolImpl pool = new ThreadPoolImpl(numberOfThreads);
+
+        // This set should contain `numberOfThreads` unique elements
+        Set<String> threadNames = new HashSet<>();
+
+        // Ensure that main thread won't proceed until all tasks have been completed
+        final Object syncMain = new Object();
+        final AtomicInteger finishedThreadsCount = new AtomicInteger(0);
+
+        // Ensures that threads from the pool get blocked one by one
+        Barrier barrier = new Barrier(numberOfThreads);
+
+        for (int i = 0; i < numberOfThreads; i++) {
+            pool.submit(() -> {
+                barrier.await();
+
+                threadNames.add(Thread.currentThread().getName());
+
+                finishedThreadsCount.incrementAndGet();
+
+                synchronized (syncMain) {
+                    syncMain.notify();
+                }
+
+                return null;
+            });
+        }
+
+        while (finishedThreadsCount.get() < numberOfThreads) {
+            try {
+                synchronized (syncMain) {
+                    syncMain.wait();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        assertEquals(threadNames.size(), numberOfThreads);
+
+        pool.shutdown();
+    }
 
     @Test
     public void testBasic() throws LightExecutionException, InterruptedException {
