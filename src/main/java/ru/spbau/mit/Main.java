@@ -6,15 +6,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.LinkedList;
-import java.util.List;
 
-public class Main {
+final class Main {
+    private Main() {
+    }
+
     static String toHexString(byte[] bytes) {
         StringBuilder hexString = new StringBuilder();
 
         for (byte aByte : bytes) {
-            String hex = Integer.toHexString(0xFF & aByte);
+            final int mask = 0xFF;
+            String hex = Integer.toHexString(mask & aByte);
             if (hex.length() == 1) {
                 hexString.append('0');
             }
@@ -30,19 +32,14 @@ public class Main {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
         int readBytesCount;
-        byte[] readBytes = new byte[1024];
+        final int bytesPerRead = 1024;
+        byte[] readBytes = new byte[bytesPerRead];
 
         while ((readBytesCount = is.read(readBytes, 0, readBytes.length)) != -1) {
             buffer.write(readBytes, 0, readBytesCount);
         }
 
         return buffer.toByteArray();
-    }
-
-    public static void main(String[] args) {
-        List<CheckSumComputer> checkSumComputers = new LinkedList<>();
-        checkSumComputers.add(new SingleThreadCheckSumComputer());
-        checkSumComputers.add(new ForkJoinCheckSumComputer());
     }
 }
 

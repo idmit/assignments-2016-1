@@ -60,7 +60,6 @@ public class ForkJoinCheckSumComputer implements CheckSumComputer {
                     e.printStackTrace();
                 }
             }
-            
             try {
                 MessageDigest md = MessageDigest.getInstance("MD5");
                 return Main.toHexString(md.digest(bytes));
