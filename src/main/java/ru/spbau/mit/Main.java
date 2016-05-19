@@ -1,40 +1,47 @@
 package ru.spbau.mit;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.LinkedList;
+import java.util.List;
 
-/**
- * Created by idmit on 01/03/2016.
- */
 public class Main {
-    public static void main(String[] args) {
-        final int parties = 3;
-        final Barrier b = new Barrier(parties);
+    static String toHexString(byte[] bytes) {
+        StringBuilder hexString = new StringBuilder();
 
-        Thread x = new Thread(() -> {
-            b.await();
-            System.out.println("1 finished.");
-        });
-
-        Thread y = new Thread(() -> {
-            b.await();
-            System.out.println("2 finished.");
-        });
-
-        Thread z = new Thread(() -> {
-            b.await();
-            System.out.println("3 finished.");
-        });
-
-        x.start();
-        y.start();
-
-        try {
-            Thread.currentThread().sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        for (byte aByte : bytes) {
+            String hex = Integer.toHexString(0xFF & aByte);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
         }
 
-        z.start();
+        return hexString.toString();
+    }
+
+    static byte[] contentToByteArray(Path path) throws IOException {
+        InputStream is = new BufferedInputStream(Files.newInputStream(path));
+
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+        int readBytesCount;
+        byte[] readBytes = new byte[1024];
+
+        while ((readBytesCount = is.read(readBytes, 0, readBytes.length)) != -1) {
+            buffer.write(readBytes, 0, readBytesCount);
+        }
+
+        return buffer.toByteArray();
+    }
+
+    public static void main(String[] args) {
+        List<CheckSumComputer> checkSumComputers = new LinkedList<>();
+        checkSumComputers.add(new SingleThreadCheckSumComputer());
     }
 }
 
