@@ -18,6 +18,7 @@ public class CheckSumTest {
         List<CheckSumComputer> checkSumComputers = new LinkedList<>();
         checkSumComputers.add(new SingleThreadCheckSumComputer());
         checkSumComputers.add(new ForkJoinCheckSumComputer());
+        checkSumComputers.add(new ExecutorServiceCheckSumComputer());
 
         URL url = this.getClass().getResource("/testDir");
         File file = new File(url.getFile());
@@ -31,6 +32,7 @@ public class CheckSumTest {
 
         System.out.println(results.get(0));
         System.out.println(results.get(1));
+        System.out.println(results.get(2));
 
         assertEquals(results.stream().distinct().count(), 1);
     }
