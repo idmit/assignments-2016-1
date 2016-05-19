@@ -42,6 +42,7 @@ public class Main {
     public static void main(String[] args) {
         List<CheckSumComputer> checkSumComputers = new LinkedList<>();
         checkSumComputers.add(new SingleThreadCheckSumComputer());
+        checkSumComputers.add(new ForkJoinCheckSumComputer());
     }
 }
 
